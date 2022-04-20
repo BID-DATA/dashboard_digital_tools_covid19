@@ -1,0 +1,29 @@
+modulo,indicador,variable ,notes
+Uso de tecnologia,% que usa smartphones,P7,
+Uso de tecnologia,% que conoce apps para reportar sintomas,P37,
+Uso de tecnologia,% que usa el celular para compras o pagar servicios online,P8_3,
+Uso de tecnologia,% que usa el celular para acceder a WhatsApp,P8_2,
+Uso de tecnologia,% que usa el celular para acceder a redes sociales,P8_1,
+Uso de tecnologia,% que descargaria una app del gobierno para conocer los sintomas de COVID-19,P23,P23A P23B
+Uso de tecnologia,% que descargaria una app si le alertara sobre contacto con contagiados,P24,P24A P24B
+Uso de tecnologia,% que instalaria una app para saber nivel de riesgo de estar infectado,P25_1,P25A_1 P25B_1
+Uso de tecnologia,% que instalaria una app para mantenerse informado,P25_4,P25A_4 P25B_4
+Uso de tecnologia,% que instalaria una app para proteger a la familia,P25_3,P25A_3 P25B_3
+Uso de tecnologia,% que instalaria una app para ayudar a tener la pandemia,P25_8,P25A_8 P25B_8
+Uso de tecnologia,% que no instalaria una app porque no cree que tenga beneficios,P26_4,P26A_4 P26B_4
+Uso de tecnologia,% que no instalaria una app porque no quiere que el gobierno tenga acceso a la localizacion,P26_8,P26A_8 P26B_8
+Uso de tecnologia,% que no instalaria una app porque no cree que ayude a detener la pandemia,P26_1,P26A_1 P26B_1
+Uso de tecnologia,% que no instalaria una app porque no cree en promesas de anonimatos,P26_9,P26A_9 P26B_9
+Uso de tecnologia,% que descargaria una app que permita beneficios en tiendas,P27_3,P27A_3 P27B_3
+Uso de tecnologia,% que descargaria una app si un familiar estuviese infectado,P27_2,P27A_2 P27B_2
+Uso de tecnologia,% que descargaria una app si fuese un caso positivo,P27_1,P27A_1 P27B_1
+Uso de tecnologia,% que descargaria una app si fuese disenada por la OMS,P28_4,P28A_4 P28B_4
+Uso de tecnologia,% que descargaria una app si fuese disenada por una compania telefonica,P28_3,P28A_3 P28B_3
+Uso de tecnologia,% que descargaria una app si fuese disenada por una compania tecnologica internacional,P28_2,P28A_2 P28B_2
+Uso de tecnologia,% que descargaria una app si fuese disenada por el gobierno local,P28_1,P28A_1 P28B_1
+Confianza y COVID-19,% que cree que se puede confiar en la mayoria de personas,P9_1,P9
+Confianza y COVID-19,% que cree que uno nunca es lo suficientemente cuidadoso en el trato con los demas,P9_2,P9
+Tramites,% que realizo tramites en el primer trimestre de 2020,P13,
+"Confianza, tecnologia y COVID-19",% que tiene conocimiento sobre el uso legal de los datos personales por el gobierno,P29,
+Comportamiento,% que casi siempre cumplen las recomendaciones del gobierno para prevenir contagios,P38_1,P38A
+Comportamiento,% que percibe que casi siempre los demas cumplen las recomendaciones del gobierno para prevenir contagios,P38_2,P38B
