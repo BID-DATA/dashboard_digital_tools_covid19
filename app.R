@@ -35,10 +35,10 @@ library(data.table)
 # Digital technologies
     # Import data
     # 10 countries in LAC
-    df = read.csv("data-dashboard.csv", encoding = 'UTF-8')
+    df = read.csv("./output/data-dashboard.csv", encoding = 'UTF-8')
  
 # Indicators
-    ind = read.csv('module-indicators.csv', sep = ',')
+    ind = read.csv('./output/module-indicators.csv', sep = ";")
     names(ind)[1] = "modulo"
     ind = 
         ind %>%
@@ -50,6 +50,7 @@ library(data.table)
         df %>% 
         reshape2::melt(id.vars = c("Ponderador","COUNTRY","P1","P2","P0"), variable.name = "var") %>%
         mutate(P0    = P0 * Ponderador, 
+               value = as.numeric(value),
                value = value * Ponderador) %>%
         dplyr::group_by(COUNTRY, P1, P2, var) %>%
         dplyr::summarize(total_ = sum(value, na.rm = T), 
@@ -72,7 +73,7 @@ library(data.table)
     
 # Import Shapefiles
     # Countries in America 
-    sh_america = readOGR(dsn     = './shp',
+    sh_america = readOGR(dsn     = './raw/shp',
                          layer   = 'Americas',
                          verbose = F)
 
@@ -93,6 +94,7 @@ library(data.table)
 # User interface 
 # -------------------------------------------------------------------
 ui = navbarPage(
+    
     # Name of the app
     "Uso de Tecnologia en ALC", 
     id = "nav",
@@ -123,7 +125,7 @@ ui = navbarPage(
             bottom    = "auto",
             left      = "auto", 
             right     = 450,
-            width     = 450, height = "100%",
+            width     = 800, height = "95%",
             
             # Title for absolute panel
             h3(strong("Resultados")),
@@ -132,15 +134,28 @@ ui = navbarPage(
             br(),
             
             # Interactive plots 
-            # Estadisticas por genero
-            h5(strong("Genero")),
-            plotlyOutput("plot1", height = 250),
+            
+            # Country & variable figure
+            h5(strong("{Pregunta asociada al indicador}")),
+            plotlyOutput("plot3", height = 300),
             
             br(), 
             
+            # Estadisticas por genero
+            absolutePanel(
+                right = 450,
+                width = 320, 
+                h5(strong("Genero")),
+                plotlyOutput("plot1", height = 240)
+            ),
+            
             # Estadisticas por grupos de edad
-            h5(strong("Grupos de edad")),
-            plotlyOutput("plot2", height = 250),
+            absolutePanel(
+                right = 70, 
+                width = 320, 
+                h5(strong("Grupos de edad")),
+                plotlyOutput("plot2", height = 240)
+            ),
             
             # With the following code we're applying the changes in absolutePanel 
             # The options are in line 103
@@ -159,7 +174,7 @@ ui = navbarPage(
             bottom    = "auto",
             left      = "auto", 
             right     = 30,
-            width     = 400, height = "100%",
+            width     = 400, height = "95%",
             
             # Title for absolute panel
             h3(strong("Filtros")),
@@ -214,9 +229,9 @@ server = function(input, output, session) {
         leaflet() %>% 
             
             # Set view in area of interest
-            setView(lng  = -38, 
-                    lat  = -6.4,
-                    zoom = 4) %>%
+            setView(lng  = 23.7, #-38, 
+                    lat  = -4.5, #-6.4,
+                    zoom = 3) %>%
             
             # Add base maps 
             addProviderTiles("CartoDB.DarkMatterNoLabels"     , group = "World Dark") %>% 
@@ -249,7 +264,8 @@ server = function(input, output, session) {
         if (length(input$input0) > 0) {
             ind_ = 
                 ind %>%
-                filter(modulo == as.character(input$input0))
+                filter(modulo == as.character(input$input0)) %>%
+                filter(variable != "")
             
             return(ind_)
         }
@@ -274,6 +290,17 @@ server = function(input, output, session) {
             return(name$variable)
         } 
     })
+    
+    # subset category name
+    catnameInput = eventReactive(input$input1, {
+        if (length(input$input1) > 0) {
+            name = 
+                indnameInput() %>%
+                filter(indicador == as.character(input$input1)) %>%
+                select(category)
+            return(name$category)
+        }
+    })
 
     # Leaflet maps 
     # ---------------------------------------------------------------
@@ -282,13 +309,14 @@ server = function(input, output, session) {
     dfTemp = eventReactive (input$input1, {
         # Subset dataset
         temp = df %>%
-            select(COUNTRY, Ponderador, indnameInput(), P0) %>%
-            rename(val = indnameInput())                    %>%
-            mutate(tot    = val * Ponderador,
-                   count_ = P0 * Ponderador)                %>%                 
-            dplyr::group_by(COUNTRY)                        %>%
+            select(COUNTRY, Ponderador, P0, indnameInput())   %>%
+            rename(val    = indnameInput())                   %>%
+            mutate(P0     = ifelse(val >= 0, P0, NA),
+                   tot    = val * Ponderador,
+                   count_ = P0  * Ponderador)                 %>%                 
+            dplyr::group_by(COUNTRY)                          %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
-                             count_ = sum(count_))          %>%
+                             count_ = sum(count_, na.rm = T)) %>%
             mutate(n = (total_ / count_) * 100)
 
         return(temp)
@@ -346,11 +374,12 @@ server = function(input, output, session) {
             # Subset
             select(COUNTRY, Ponderador, indnameInput(), P0, P2) %>%
             rename(val = indnameInput())                        %>%
-            mutate(tot    = val * Ponderador,
-                   count_ = P0 * Ponderador)                    %>%
+            mutate(P0     = ifelse(val >= 0, P0, NA),
+                   tot    = val * Ponderador,
+                   count_ = P0  * Ponderador)                   %>% 
             dplyr::group_by(COUNTRY, P2)                        %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
-                             count_ = sum(count_))              %>%
+                             count_ = sum(count_, na.rm = T))   %>%
             mutate(n = (total_ / count_) * 100)                 %>% 
             
             # Figure
@@ -372,19 +401,19 @@ server = function(input, output, session) {
     
     })
     
-    # # Plot 2: Bar plot of arrests
-    # # Number of crimes of selected crime that ended up in a arrest
+    # # Plot 2: Bar plot by age groups
     # # ---------------------------------------------------------------
     output$plot2 = renderPlotly({
         df %>% 
             # Subset
             select(COUNTRY, Ponderador, indnameInput(), P0, P1) %>%
             rename(val = indnameInput())                        %>%
-            mutate(tot    = val * Ponderador,
-                   count_ = P0 * Ponderador)                    %>%
+            mutate(P0     = ifelse(val >= 0, P0, NA),
+                   tot    = val * Ponderador,
+                   count_ = P0  * Ponderador)                   %>% 
             dplyr::group_by(COUNTRY, P1)                        %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
-                             count_ = sum(count_))              %>%
+                             count_ = sum(count_, na.rm = T))   %>%
             mutate(n = (total_ / count_) * 100)                 %>% 
             
             # Figure
@@ -404,6 +433,85 @@ server = function(input, output, session) {
                                         y = 1.2),
                    margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
     })
+        
+    # # Plot 3: Bar plot by age groups
+    # # ---------------------------------------------------------------
+    output$plot3 = renderPlotly({
+        
+        if (indnameInput() %in% subset(ind, ind$cat_id == 1)$variable) {
+            # Subset
+            temp = 
+                df %>% 
+                select(COUNTRY, Ponderador, P0, starts_with(catnameInput())) %>%
+                #select(COUNTRY, Ponderador, P0, starts_with("P8")) %>%
+                select(COUNTRY, Ponderador, P0, ends_with("_cat"))    %>%
+                melt(id = c("COUNTRY","Ponderador","P0"))             %>%
+                rename(category = value)                              %>%
+                mutate(category = as.character(category))             %>% 
+                mutate(variable = as.character(variable))             %>% 
+                dplyr::group_by(COUNTRY, variable, category)          %>%
+                dplyr::summarize(total_ = sum(Ponderador, na.rm = T)) %>%
+                dplyr::group_by(COUNTRY,variable) %>%
+                mutate(count_ = sum(total_, na.rm = T)) %>%
+                mutate(n = (total_ / count_) * 100) 
+            
+            # Unique values 
+            nvariable = unique(temp$variable)
+            
+            # Figure
+            plots = lapply(nvariable, function(i) {
+                temp %>% 
+                    filter(as.character(variable) == i) %>%
+                    plot_ly(x     =~ COUNTRY,
+                            y     =~ n,
+                            color =~ category,
+                            type  = 'bar',
+                            alpha = 0.7,
+                            showlegend = (i == "Nunca")) %>%
+                    
+                    layout(xaxis         = list(title = '' , tickangle = 90),
+                           yaxis         = list(title = '', range = c(0,100)),
+                           plot_bgcolor  = 'transparent',
+                           paper_bgcolor = 'transparent',
+                           barmode       = 'stack',
+                           legend        = list(orientation = 'h',
+                                                xanchor     = 'center',
+                                                x = 0.5,
+                                                y = 1.2),
+                           margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+            })
+            subplot(plots, nrows = 1)
+        } else {
+            df %>% 
+                # Subset
+                select(COUNTRY, Ponderador, indnameInput(), P0)     %>%
+                rename(val = indnameInput())                        %>%
+                mutate(P0     = ifelse(val >= 0, P0, NA),
+                       tot    = val * Ponderador,
+                       count_ = P0  * Ponderador)                   %>% 
+                dplyr::group_by(COUNTRY)                            %>%
+                dplyr::summarize(total_ = sum(tot, na.rm = T),
+                                 count_ = sum(count_, na.rm = T))   %>%
+                mutate(n = (total_ / count_) * 100)                 %>% 
+                
+                # Figure
+                plot_ly(x     =~ COUNTRY,
+                        y     =~ n,
+                        type  = 'bar',
+                        alpha = 0.7) %>%
+                
+                layout(xaxis         = list(title = '', tickangle = 90),
+                       yaxis         = list(title = '', range = c(0,100)),
+                       plot_bgcolor  = 'transparent',
+                       paper_bgcolor = 'transparent',
+                       legend        = list(orientation = 'h',
+                                            xanchor     = 'center',
+                                            x = 0.5,
+                                            y = 1.2),
+                       margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+        }
+    })
+    
     
     # Tab - Data Explorer 
     # ---------------------------------------------------------------
