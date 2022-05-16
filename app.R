@@ -27,15 +27,23 @@ packages = c("shiny","shinythemes","shinydashboard","shinyWidgets",
              "lubridate","data.table",
              "stringi","stringr","dplyr",
              "DT",
-             "plotly")
+             "plotly", "aws.s3", 'dotenv')
 
+load_dot_env()
+
+
+Sys.setenv(
+    "AWS_ACCESS_KEY_ID" =Sys.getenv("AWS_ACCESS_KEY_ID"),
+    "AWS_SECRET_ACCESS_KEY" =Sys.getenv("AWS_SECRET_ACCESS_KEY"),
+    "AWS_DEFAULT_REGION" = Sys.getenv("AWS_DEFAULT_REGION")
+)
 # Attach packages
 invisible(suppressMessages(lapply(packages, library, character.only = T)))
 
 # Data 
 # -------------------------------------------------------------------
 # Working directory
-scldatalake = "s3://cf-p-scldata-prod-s3-p-scldata-app"
+scldatalake = Sys.getenv("scldatalake")
 recurso     = "/Specialized Survey/Survey on the use of digital tools during COVID-19/"
 app_        = "data/app/"
 path_       = paste0(scldatalake, recurso, app_)
@@ -44,10 +52,16 @@ path_       = paste0(scldatalake, recurso, app_)
 # Digital technologies
     # Import data
     # 10 countries in LAC
-    df = read.csv(paste0(path_,"data-dashboard.csv"), encoding = 'UTF-8')
+    df <- s3read_using(FUN = read.csv,
+                       object = paste0(path_,"data-dashboard.csv"),
+                       encoding = 'UTF-8')
+    
  
 # Indicators
-    ind = read.csv(paste0(path_,'module-indicators.csv'), sep = ",")
+    ind <- s3read_using(FUN = read.csv,
+                       object = paste0(path_,'module-indicators.csv'),
+                       encoding = 'UTF-8')
+    
     names(ind)[1] = "modulo"
     ind = 
         ind %>%
@@ -110,9 +124,15 @@ path_       = paste0(scldatalake, recurso, app_)
     
 # Import Shapefiles
     # Countries in America 
-    sh_america = readOGR(dsn     = paste0(path_,"shp/"),
-                         layer   = 'Americas',
-                         verbose = F)
+    #sh_america <- s3read_using(FUN = readOGR,
+    #                           object = paste0(scldatalake,'/Specialized Survey/Survey on the use of digital tools during COVID-19/data/app/shp/America.geojson'),
+    #                           verbose = F)    
+    
+    sh_america <- readOGR(dsn     = "./raw/shp/Americas.shp",
+                          layer   = 'Americas',
+                          verbose = F)
+
+
 
 # Other
 # -------------------------------------------------------------------
