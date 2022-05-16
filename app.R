@@ -1,6 +1,16 @@
-# Laura Goyeneche
-# Source: www.efrainmaps.es/english-version/free-downloads/americas/
 # -------------------------------------------------------------------
+# Program   : Use of digital technologies in LAC
+# Source    : IDB survey
+# Country   : Multiple 
+# Author    : Laura Goyeneche, Consultant
+#             lauragoy@iadb.org / lgoyenechec5@gmail.com
+# Dependency: SCL-SPH
+# Repository: dashboard_digital_tools_covid19
+# Objective : Shinny app
+# -------------------------------------------------------------------
+
+# Basics
+rm(list = ls(all.names = T))
 
 # Libraries
 # -------------------------------------------------------------------
@@ -8,37 +18,36 @@
 # Install library
 # install.packages("rgdal", repos = "http://R-Forge.R-project.org")
 
-# Call library directly 
-library(shiny)
-library(shinythemes)
-library(shinydashboard)
-library(shinyWidgets)
-library(leaflet)
-library(leaflet.extras)
-library(leaflet.minicharts)
-library(httr)
-library(jsonlite)
-library(readxl)
-library(rgdal)
-library(lubridate)
-library(stringr)
-library(DT)
-library(plotly)
-library(dplyr)
-library(stringi)
-library(data.table)
+# Define packages
+packages = c("shiny","shinythemes","shinydashboard","shinyWidgets",
+             "leaflet","leaflet.extras","leaflet.minicharts",
+             "httr","jsonlite",
+             "readxl",
+             "rgdal",
+             "lubridate","data.table",
+             "stringi","stringr","dplyr",
+             "DT",
+             "plotly")
 
+# Attach packages
+invisible(suppressMessages(lapply(packages, library, character.only = T)))
 
 # Data 
 # -------------------------------------------------------------------
+# Working directory
+scldatalake = "s3://cf-p-scldata-prod-s3-p-scldata-app"
+recurso     = "/Specialized Survey/Survey on the use of digital tools during COVID-19/"
+app_        = "data/app/"
+path_       = paste0(scldatalake, recurso, app_)
+
 
 # Digital technologies
     # Import data
     # 10 countries in LAC
-    df = read.csv("./output/data-dashboard.csv", encoding = 'UTF-8')
+    df = read.csv(paste0(path_,"data-dashboard.csv"), encoding = 'UTF-8')
  
 # Indicators
-    ind = read.csv('./output/module-indicators.csv', sep = ";")
+    ind = read.csv(paste0(path_,'module-indicators.csv'), sep = ",")
     names(ind)[1] = "modulo"
     ind = 
         ind %>%
@@ -48,32 +57,60 @@ library(data.table)
 # Output data
     dfOutput = 
         df %>% 
-        reshape2::melt(id.vars = c("Ponderador","COUNTRY","P1","P2","P0"), variable.name = "var") %>%
+        # Reshape dataset
+        reshape2::melt(id.vars       = c("Ponderador","COUNTRY","P1","P2","P0"), 
+                       variable.name = "var") %>%
+        
+        # Process `factor expansion`
         mutate(P0    = P0 * Ponderador, 
                value = as.numeric(value),
                value = value * Ponderador) %>%
+        
+        # Collapse by country, age, gender, and variable 
         dplyr::group_by(COUNTRY, P1, P2, var) %>%
+        
+        # summarize variables
         dplyr::summarize(total_ = sum(value, na.rm = T), 
                          count_ = sum(P0)) %>%
+        
+        # Create percentages
         mutate(n = round((total_ / count_) * 100,2)) %>%
+        
+        # Select variables of interest
         select(COUNTRY, P1, P2, n, var) %>%
+    
+        # Rename variables 
         rename(Pais = COUNTRY, 
                Edad = P1, 
                Sexo = P2,
                variable = var, 
                Porcentaje = n) %>%
+        
+        # Create summary table 
         tidyr::pivot_wider(names_from = Pais, values_from = c("Porcentaje")) %>%
+        
+        # Format data
         as.data.frame() %>%
+        
+        # Merge with `indicators` dictionary
         plyr::join(ind, by = "variable") %>%
+        
+        # Remove NAs
         filter(complete.cases(.)) %>%
+        
+        # Order variables
         dplyr::relocate(modulo, .after = variable) %>% 
         dplyr::relocate(indicador, .after = modulo) %>%
+        
+        # Rename variable
         rename(code = variable) %>%
+        
+        # Drop variables
         select(-notes)
     
 # Import Shapefiles
     # Countries in America 
-    sh_america = readOGR(dsn     = './raw/shp',
+    sh_america = readOGR(dsn     = paste0(path_,"shp/"),
                          layer   = 'Americas',
                          verbose = F)
 
@@ -134,10 +171,8 @@ ui = navbarPage(
             br(),
             
             # Interactive plots 
-            
             # Country & variable figure
-            h5(strong("{Pregunta asociada al indicador}")),
-            plotlyOutput("plot3", height = 300),
+            plotlyOutput("plot3", height = 400),
             
             br(), 
             
@@ -187,7 +222,6 @@ ui = navbarPage(
             uiOutput("input1"),
 
             br(),
-            
             
             # With the following code we're applying the changes in absolutePanel 
             # The options are in line 102
@@ -264,6 +298,7 @@ server = function(input, output, session) {
         if (length(input$input0) > 0) {
             ind_ = 
                 ind %>%
+                #filter(modulo == "Uso de tecnologia") %>%
                 filter(modulo == as.character(input$input0)) %>%
                 filter(variable != "")
             
@@ -295,10 +330,11 @@ server = function(input, output, session) {
     catnameInput = eventReactive(input$input1, {
         if (length(input$input1) > 0) {
             name = 
-                indnameInput() %>%
+                indlistInput() %>%
                 filter(indicador == as.character(input$input1)) %>%
                 select(category)
-            return(name$category)
+            name = as.character(name$category)
+            return(name)
         }
     })
 
@@ -345,7 +381,7 @@ server = function(input, output, session) {
         # Choropleth map
         leafletProxy("map", data = map) %>%
 
-            clearGroup(group = "marker") %>%
+            clearGroup(group = "marker")      %>%
             clearGroup(group = "chloropleth") %>%
             clearControls() %>%
 
@@ -443,7 +479,7 @@ server = function(input, output, session) {
             temp = 
                 df %>% 
                 select(COUNTRY, Ponderador, P0, starts_with(catnameInput())) %>%
-                #select(COUNTRY, Ponderador, P0, starts_with("P8")) %>%
+                # select(COUNTRY, Ponderador, P0, starts_with("P8"))    %>%
                 select(COUNTRY, Ponderador, P0, ends_with("_cat"))    %>%
                 melt(id = c("COUNTRY","Ponderador","P0"))             %>%
                 rename(category = value)                              %>%
@@ -451,25 +487,39 @@ server = function(input, output, session) {
                 mutate(variable = as.character(variable))             %>% 
                 dplyr::group_by(COUNTRY, variable, category)          %>%
                 dplyr::summarize(total_ = sum(Ponderador, na.rm = T)) %>%
-                dplyr::group_by(COUNTRY,variable) %>%
-                mutate(count_ = sum(total_, na.rm = T)) %>%
-                mutate(n = (total_ / count_) * 100) 
+                dplyr::group_by(COUNTRY,variable)                     %>%
+                mutate(count_ = sum(total_, na.rm = T))               %>%
+                mutate(n = (total_ / count_) * 100)                   %>% 
+                mutate(category = ifelse(category == "","N/A",category))
             
-            # Unique values 
+            # Unique values variable
             nvariable = unique(temp$variable)
+            
+            # Title
+            # title = ind[ind$category == "P8",]$title
+            title = ind[ind$category == catnameInput(),]$title
+            title = unique(title)
+            title = as.character(title)
+            title = paste(strwrap(title, width = 90), collapse = "\n")
             
             # Figure
             plots = lapply(nvariable, function(i) {
+                # Subtitle name
+                subtitle = gsub("_cat","",i)
+                subtitle = ind[ind$variable == subtitle,]$category_var
+                subtitle = as.character(subtitle)
+                
                 temp %>% 
-                    filter(as.character(variable) == i) %>%
+                    mutate(COUNTRY  = as.character(COUNTRY),
+                           variable = as.character(variable)) %>%
+                    filter(variable == i)                     %>%
                     plot_ly(x     =~ COUNTRY,
                             y     =~ n,
                             color =~ category,
                             type  = 'bar',
                             alpha = 0.7,
-                            showlegend = (i == "Nunca")) %>%
-                    
-                    layout(xaxis         = list(title = '' , tickangle = 90),
+                            showlegend = (i == nvariable[round(length(nvariable)/2)])) %>%
+                    layout(xaxis         = list(title = subtitle, tickangle = 90),
                            yaxis         = list(title = '', range = c(0,100)),
                            plot_bgcolor  = 'transparent',
                            paper_bgcolor = 'transparent',
@@ -477,10 +527,10 @@ server = function(input, output, session) {
                            legend        = list(orientation = 'h',
                                                 xanchor     = 'center',
                                                 x = 0.5,
-                                                y = 1.2),
-                           margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+                                                y = -0.5),
+                           margin        = list(l = 0, r = 0, b = 20, t = 90, pad = 0))
             })
-            subplot(plots, nrows = 1)
+            subplot(plots, nrows = 1, shareY = T, titleX = T) %>% layout(title = list(text = title, y = 1.5, font = list(size = 13)))
         } else {
             df %>% 
                 # Subset
