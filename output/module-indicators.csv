@@ -1,29 +1,82 @@
-modulo,indicador,variable ,notes
-Uso de tecnologia,% que usa smartphones,P7,
-Uso de tecnologia,% que conoce apps para reportar sintomas,P37,
-Uso de tecnologia,% que usa el celular para compras o pagar servicios online,P8_3,
-Uso de tecnologia,% que usa el celular para acceder a WhatsApp,P8_2,
-Uso de tecnologia,% que usa el celular para acceder a redes sociales,P8_1,
-Uso de tecnologia,% que descargaria una app del gobierno para conocer los sintomas de COVID-19,P23,P23A P23B
-Uso de tecnologia,% que descargaria una app si le alertara sobre contacto con contagiados,P24,P24A P24B
-Uso de tecnologia,% que instalaria una app para saber nivel de riesgo de estar infectado,P25_1,P25A_1 P25B_1
-Uso de tecnologia,% que instalaria una app para mantenerse informado,P25_4,P25A_4 P25B_4
-Uso de tecnologia,% que instalaria una app para proteger a la familia,P25_3,P25A_3 P25B_3
-Uso de tecnologia,% que instalaria una app para ayudar a tener la pandemia,P25_8,P25A_8 P25B_8
-Uso de tecnologia,% que no instalaria una app porque no cree que tenga beneficios,P26_4,P26A_4 P26B_4
-Uso de tecnologia,% que no instalaria una app porque no quiere que el gobierno tenga acceso a la localizacion,P26_8,P26A_8 P26B_8
-Uso de tecnologia,% que no instalaria una app porque no cree que ayude a detener la pandemia,P26_1,P26A_1 P26B_1
-Uso de tecnologia,% que no instalaria una app porque no cree en promesas de anonimatos,P26_9,P26A_9 P26B_9
-Uso de tecnologia,% que descargaria una app que permita beneficios en tiendas,P27_3,P27A_3 P27B_3
-Uso de tecnologia,% que descargaria una app si un familiar estuviese infectado,P27_2,P27A_2 P27B_2
-Uso de tecnologia,% que descargaria una app si fuese un caso positivo,P27_1,P27A_1 P27B_1
-Uso de tecnologia,% que descargaria una app si fuese disenada por la OMS,P28_4,P28A_4 P28B_4
-Uso de tecnologia,% que descargaria una app si fuese disenada por una compania telefonica,P28_3,P28A_3 P28B_3
-Uso de tecnologia,% que descargaria una app si fuese disenada por una compania tecnologica internacional,P28_2,P28A_2 P28B_2
-Uso de tecnologia,% que descargaria una app si fuese disenada por el gobierno local,P28_1,P28A_1 P28B_1
-Confianza y COVID-19,% que cree que se puede confiar en la mayoria de personas,P9_1,P9
-Confianza y COVID-19,% que cree que uno nunca es lo suficientemente cuidadoso en el trato con los demas,P9_2,P9
-Tramites,% que realizo tramites en el primer trimestre de 2020,P13,
-"Confianza, tecnologia y COVID-19",% que tiene conocimiento sobre el uso legal de los datos personales por el gobierno,P29,
-Comportamiento,% que casi siempre cumplen las recomendaciones del gobierno para prevenir contagios,P38_1,P38A
-Comportamiento,% que percibe que casi siempre los demas cumplen las recomendaciones del gobierno para prevenir contagios,P38_2,P38B
+modulo,indicador,variable ,notes,title,category_var,cat_id,category,
+Uso de tecnologia,% que usa smartphones,P7,,¿Utilizó en la última semana un teléfono inteligente conocido también como “Smartphone”? ,,0,,99
+Uso de tecnologia,% que conoce apps para reportar sintomas,P37,,"¿Ud. ha escuchado sobre aplicaciones en su teléfono o sitios de web que le permitan reportar sus síntomas, sin ver un doctor, por ejemplo en Uruguay coronavirus.uy)? ",,0,,179
+Uso de tecnologia,% que usa el celular para compras o pagar servicios online,P8_3,,La semana pasada ¿cuántas veces uso el celular o en internet de cualquier forma para...? ¿todos los días algunos días o nunca realizó? ,Compras online,1,P8,148
+Uso de tecnologia,% que usa el celular para acceder a WhatsApp,P8_2,,La semana pasada ¿cuántas veces uso el celular o en internet de cualquier forma para...? ¿todos los días algunos días o nunca realizó? ,WhatsApp,1,P8,148
+Uso de tecnologia,% que usa el celular para acceder a redes sociales,P8_1,,La semana pasada ¿cuántas veces uso el celular o en internet de cualquier forma para...? ¿todos los días algunos días o nunca realizó? ,Redes sociales,1,P8,148
+Uso de tecnologia,% que descargaria una app del gobierno para conocer los sintomas de COVID-19,P23,P23A P23B,¿Qué haría si existe o hubiera una aplicación del gobierno nacional que le permite saber si tiene algún síntoma de coronavirus y le diga qué hacer?,Conocer sintomas COVID-19,1,P23,160
+Uso de tecnologia,% que descargaria una app si le alertara sobre contacto con contagiados,P24,P24A P24B,¿Qué haría si esa aplicación también le alertara si usted estuvo en contacto por más de 15 minutos con una persona infectada de coronavirus y le notificara a las personas que estuvieron en contacto cercano con usted sin identificar ningún nombre ni el suyo ni el de las otras personas?,Alertar sobre contagiados,1,P24,304
+Uso de tecnologia,% que instalaria una app para saber nivel de riesgo de estar infectado,P25_1,P25A_1 P25B_1,¿Cuáles serían las principales razones para instalar la aplicación? ,,0,,75
+Uso de tecnologia,% que instalaria una app para mantenerse saludable,P25_2,P25A_2 P25B_2,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app para proteger a la familia,P25_3,P25A_3 P25B_3,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app para mantenerse informado,P25_4,P25A_4 P25B_4,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app para tener paz mental de saber que no está en riesgo,P25_5,P25A_5 P25B_5,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app por responsabilidad ante la comunidad,P25_6,P25A_6 P25B_6,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app para reducir el número de fallecimientos entre la gente mayor,P25_7,P25A_7 P25B_7,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que instalaria una app para ayudar a tener la pandemia,P25_8,P25A_8 P25B_8,¿Cuáles serían las principales razones para instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no cree que ayude a detener la pandemia,P26_1,P26A_1 P26B_1,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no sabe instalar aplicaciones,P26_2,P26A_2 P26B_2,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque sería muy complicado,P26_3,P26A_2 P26B_2,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no cree que tenga beneficios,P26_4,P26A_4 P26B_4,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque me preocupa que mi teléfono pueda estar en peligro,P26_5,P26A_5 P26B_5,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque me preocupa que el gobierno utilice la aplicación como excusa para tener más control sobre la ciudadanía ,P26_6,P26A_6 P26B_6,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no quieor estar más ansioso de lo que ya estoy ahora,P26_7,P26A_7 P26B_7,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no quiere que el gobierno tenga acceso a la localizacion,P26_8,P26A_8 P26B_8,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que no instalaria una app porque no cree en promesas de anonimatos,P26_9,P26A_9 P26B_9,¿Cuáles son las principales razones para NO instalar la aplicación?,,0,,74
+Uso de tecnologia,% que descargaria una app si fuese un caso positivo,P27_1,P27A_1 P27B_1,"¿Ud. seguro instalaría, probablemente instalaría o no instalaría la aplicación en su teléfono si…?",Si fuera caso positivo,1,P27,108
+Uso de tecnologia,% que descargaria una app si un familiar estuviese infectado,P27_2,P27A_2 P27B_2,"¿Ud. seguro instalaría, probablemente instalaría o no instalaría la aplicación en su teléfono si…?",Familiar infectado,1,P27,108
+Uso de tecnologia,% que descargaria una app que permita beneficios en tiendas,P27_3,P27A_3 P27B_3,"¿Ud. seguro instalaría, probablemente instalaría o no instalaría la aplicación en su teléfono si…?",Beneficios en tiendas,1,P27,108
+Uso de tecnologia,% que descargaria una app si fuese disenada por el gobierno local,P28_1,P28A_1 P28B_1,"Si en lugar de ser diseñada por el gobierno nacional la aplicación fuera diseñada por el gobierno local, ¿usted seguramente la instalaría, probablemente la instalaría o no la instalaría? ¿Y si fuera diseñada por…?",Gobierno local,1,P27,226
+Uso de tecnologia,% que descargaria una app si fuese disenada por una compania tecnologica internacional,P28_2,P28A_2 P28B_2,"Si en lugar de ser diseñada por el gobierno nacional la aplicación fuera diseñada por el gobierno local, ¿usted seguramente la instalaría, probablemente la instalaría o no la instalaría? ¿Y si fuera diseñada por…?",Compania internacional,1,P27,226
+Uso de tecnologia,% que descargaria una app si fuese disenada por una compania telefonica,P28_3,P28A_3 P28B_3,"Si en lugar de ser diseñada por el gobierno nacional la aplicación fuera diseñada por el gobierno local, ¿usted seguramente la instalaría, probablemente la instalaría o no la instalaría? ¿Y si fuera diseñada por…?",Compania telefonica,1,P27,226
+Uso de tecnologia,% que descargaria una app si fuese disenada por la OMS,P28_4,P28A_4 P28B_4,"Si en lugar de ser diseñada por el gobierno nacional la aplicación fuera diseñada por el gobierno local, ¿usted seguramente la instalaría, probablemente la instalaría o no la instalaría? ¿Y si fuera diseñada por…?",OMS,1,P27,226
+Confianza y COVID-19,% que cree que se puede confiar en la mayoria de personas,P9_1,P9,De las siguientes dos frases ¿con cuál se identifica más?,Se puede confiar,1,P9,64
+Confianza y COVID-19,% que cree que uno nunca es lo suficientemente cuidadoso en el trato con los demas,P9_2,P9,De las siguientes dos frases ¿con cuál se identifica más?,Nunca es suficiente,1,P9,64
+Confianza y COVID-19,% que le tiene mucha confianza al gobierno,P10_1,,¿Cuánta confianza tiene usted en el gobierno? ¿Mucha algo o nada?,Gobierno,1,P10,72
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información del presidente,P11_1,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,Presidente,1,P11,187
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información de las autoridades locales,P11_2,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,Autoridades locales,1,P11,187
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información de los medios de comunicación,P11_3,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,Medios de comunicacion,1,P11,187
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información de los posts en redes sociales,P11_4,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,Post en redes sociales,1,P11,187
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información de la OMS,P11_5,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,OMS,1,P11,187
+Confianza y COVID-19,% que tiene algo o mucha confianza en la información del Ministerio de Salud,P11_6,,Pensando en la información que recibe sobre el coronavirus ¿usted tiene mucha confianza en la información que da el presidente (u otras autoridades) algo o ninguna confianza?,Ministerio de Salud,1,P11,187
+Tramites,% que realizo tramites en el primer trimestre de 2020,P13,,Entre enero y marzo antes de que hubiera restricciones al movimiento (llamado “cuarentena” en algunos lugares) ¿hizo algún trámite con una institución de gobierno como renovar documento de identidad licencia de conducir acceder a seguro de desempleo o cualquier otro trámite? ,,0,P13,292
+Tramites,,P14_cat,,¿Qué tipo de trámite fue?,,1,P14,32
+Tramites,,P15_cat,,Para el mismo trámite que nos acaba de señalar ¿Fue personalmente a una oficina pública hizo el trámite por internet hizo el trámite por teléfono o empezó el trámite por internet o por teléfono y lo terminó personalmente?,,1,P15,228
+Tramites,% que durante el periodo de mayores restricciones (cuarentena) hizo algún trámice con una institución de gobierno,P16,,Durante el periodo de mayores restricciones al movimiento (llamado “cuarentena” en algunos lugares) ¿hizo algún trámite con una institución de gobierno como renovar documento de identidad licencia de conducir acceder a seguro de desempleo o cualquier otro trámite? ,,0,P16,272
+Tramites,,P17_cat,,Si hizo más de un trámite durante el periodo de mayores restricciones al movimiento (cuarentenas) queremos saber sobre el trámite más reciente. ¿Qué tipo de trámite fue? ,,1,P17,177
+Tramites,,P18_cat,,¿Fue personalmente a una oficina pública hizo el trámite por internet hizo el trámite por teléfono o empezó el trámite por internet y lo terminó personalmente?,,1,P18,166
+Tramites,% que cree que se respetaron las normas de distanciamiento social y seguridad sanitaria,P19,,¿Considera usted que se respetaron las normas de distanciamiento social y seguridad sanitaria en su visita a la oficina prestadora? ,,0,P19,139
+Tramites,% que hubiera querido hacer algún trámite oficial y no pudo por cuarentenas,P20,,Durante el periodo de cuarentena más restrictiva ¿hubo algún trámite oficial que hubiera querido hacer pero que no pudo?,,0,P20,127
+Tramites,,P21_cat,,Pensando en el trámite MAS IMPORTANTE que no pudo hacer ¿Qué tipo de trámite fue?,,1,P21,88
+Tramites,,P22_cat,,¿Por qué no lo pudo hacer? ,,1,P22,34
+Confianza tecnologia y COVID-19,% que tiene conocimiento sobre el uso legal de los datos personales por el gobierno,P29,,De acuerdo con lo que usted sabe o escuchó ¿sus datos personales legalmente pueden ser utilizados por el gobierno en casos de emergencia?,,0,,144
+Confianza tecnologia y COVID-19,,P30_cat,,Si considera que hubo un mal uso de sus datos personales ¿dónde lo denunciaría? ,,1,P30,87
+Confianza tecnologia y COVID-19,,P31_cat,,¿Le parece que compartir sus datos personales tiene más beneficios que riesgos o más riesgos que beneficios? ,,1,P31,116
+Confianza tecnologia y COVID-19,,P32_cat,,¿Ud. considera que tiene control sobre sus datos personales? ,,1,P32,68
+Confianza tecnologia y COVID-19,,P33_cat,,¿Usted sabe qué hacen las empresas con sus datos personales?,,1,P33,67
+Confianza tecnologia y COVID-19,,P34_cat,,¿Usted sabe qué hace el gobierno con sus datos personales?,,1,P34,65
+Confianza tecnologia y COVID-19,,P35_cat,,¿Qué es lo que más le preocupa sobre el uso que puedan hacer otros de sus datos personales?,,1,P35,98
+Confianza tecnologia y COVID-19,% que piensa que los beneficios que el gobierno puede proporcionar al recopilar mis datos y el de otras personas superan los riesgos potenciales en épocas de pandemia,P36_1,,¿Piensa que los beneficios que el gobierno puede proporcionar al recopilar mis datos y el de otras personas superan los riesgos potenciales en épocas de pandemia?,,0,,169
+Confianza tecnologia y COVID-19,% que piensa que para limitar la propagación del Covid 19 es imprescindible que el gobierno pueda rastrear los movimientos de todos nosotros para asegurarse que la gente limite el contacto social,P36_2,,¿Piensa que para limitar la propagación del Covid 19 es imprescindible que el gobierno pueda rastrear los movimientos de todos nosotros para asegurarse que la gente limite el contacto social?,,0,,198
+Confianza tecnologia y COVID-19,% que piensa que el gobierno debería multar a las personas que son coronavirus positivo y no permiten la geo localización de sus celulares,P36_3,,¿Piensa que el gobierno debería multar a las personas que son coronavirus positivo y no permiten la geo localización de sus celulares?,,0,,141
+Comportamiento,,P38A_cat,,¿Cumple usted las recomendaciones de las autoridades de PAIS para prevenir el contagio del coronavirus?,,1,P38A,110
+Comportamiento,,P38B_cat,,¿Cuánto MEJOR que usted cumplen el resto de los nacionalidad las recomendaciones de las autoridades de PAIS para prevenir el contagio del coronavirus? ,,1,P38B,158
+Comportamiento,% que siempre o algunas veces uso tapabocas en la vía pública,P39A_1,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Tapabocas en via publica,1,P39A,126
+Comportamiento,% que siempre o algunas veces uso tapabocas dentro de establecimientos,P39A_2,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Tapabocas dentro de establecimientos,1,P39A,126
+Comportamiento,% que siempre o algunas veces que uso tapabocas en su lugar de trabajo,P39A_3,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Tapabocas en el trabajo,1,P39A,126
+Comportamiento,% que siempre o algunas veces se lavó las manos al volver a su hogar,P39A_4,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Lava las manos al volver al hogar,1,P39A,126
+Comportamiento,% que siempre o algunas veces uso alcohol en gel dentro de establecimientos,P39A_5,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Gel en establecimientos,1,P39A,126
+Comportamiento,% que siempre o algunas veces usa el codo o antebrazo para toser y/o estornudar,P39A_6,,En la semana pasada ¿ Con cuánta frecuencia cumplió con las siguientes recomendaciones? ¿Siempre algunas veces o nunca?,Codo para toser/estornudar,1,P39A,126
+Comportamiento,,P39B_1,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,,P39B_2,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,,P39B_3,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,,P39B_4,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,,P39B_5,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,,P39B_6,,"En la semana pasada, ¿ Con cuánta MÁS frecuencia que usted cumplieron el resto de los nacionalidad con las siguientes recomendaciones? ¿Siempre, algunas veces, o nunca?",,1,P39B,175
+Comportamiento,% que piensa que hasta que se desarrollo una vacuna las clases presenciales deberían estar prohibidas para niños entre 0-5 años,P41_1,,¿Piensa que hasta que se desarrolle una vacuna las clases presenciales deberían estar prohibidas para niños entre 0-5 años?,,0,,130
+Comportamiento,% que piensa que hasta que se desarrollo una vacuna las clases presenciales deberían estar prohibidas para niños entre 6-12 años,P41_2,,¿Piensa que hasta que se desarrolle una vacuna las clases presenciales deberían estar prohibidas para niños entre 6-12 años?,,0,,131
+Comportamiento,% que apoya que las autoridades llamen por teléfono todos los días a las personas con coronavirus,P12_1,P12A_1 P12B_1,Las personas con coronavirus deben aislarse para no contagiar y mantenerse en cuarentena. Para corroborar que todos los enfermos se mantengan en cuarentena ¿Usted apoya o no apoya que autoridades del gobierno?,,0,,216
+Comportamiento,% que apoya que las autoridades visiten todos los días a las personas con coronavirus,P12_2,P12A_2 P12B_2,Las personas con coronavirus deben aislarse para no contagiar y mantenerse en cuarentena. Para corroborar que todos los enfermos se mantengan en cuarentena ¿Usted apoya o no apoya que autoridades del gobierno?,,0,,216
+Comportamiento,% que apoya que las autoridades les pongan pulseras electrónicas a las personas con coronavirus,P12_3,P12A_3 P12B_3,Las personas con coronavirus deben aislarse para no contagiar y mantenerse en cuarentena. Para corroborar que todos los enfermos se mantengan en cuarentena ¿Usted apoya o no apoya que autoridades del gobierno?,,0,,216
+Comportamiento,% que apoya que las autoridades rastreen dónde están los enfermos con el teléfono celular (vía sistema de GPS),P12_4,P12A_4 P12B_4,Las personas con coronavirus deben aislarse para no contagiar y mantenerse en cuarentena. Para corroborar que todos los enfermos se mantengan en cuarentena ¿Usted apoya o no apoya que autoridades del gobierno?,,0,,216
+Comportamiento,% que apoya que las autoridades pongan un guardia en la puerta del lugar donde está el enfermo,P12_5,P12A_5 P12B_5,Las personas con coronavirus deben aislarse para no contagiar y mantenerse en cuarentena. Para corroborar que todos los enfermos se mantengan en cuarentena ¿Usted apoya o no apoya que autoridades del gobierno?,,0,,216
