@@ -19,26 +19,51 @@ rm(list = ls(all.names = T))
 # install.packages("rgdal", repos = "http://R-Forge.R-project.org")
 
 # Define packages
-packages = c("shiny","shinythemes","shinydashboard","shinyWidgets",
-             "leaflet","leaflet.extras","leaflet.minicharts",
-             "httr","jsonlite",
-             "readxl",
-             "rgdal",
-             "lubridate","data.table",
-             "stringi","stringr","dplyr",
-             "DT",
-             "plotly", "aws.s3", 'dotenv')
+# packages = c("shiny","shinythemes","shinydashboard","shinyWidgets",
+#              "leaflet","leaflet.extras","leaflet.minicharts",
+#              "httr","jsonlite",
+#              "readxl",
+#              "rgdal",
+#              "lubridate","data.table",
+#              "stringi","stringr","dplyr",
+#              "DT",
+#              "plotly",
+#              "aws.s3",
+#              "dotenv")
 
-load_dot_env()
 
+library("shiny")
+library("shinythemes")
+library("shinydashboard")
+library("shinyWidgets")
+library("leaflet")
+library("leaflet.extras")
+library("leaflet.minicharts")
+library("httr")
+library("jsonlite")
+library("readxl")
+library("rgdal")
+library("lubridate")
+library("data.table")
+library("stringi")
+library("stringr")
+library("dplyr")
+library("DT")
+library("plotly")
+library("aws.s3")
+library("dotenv")
+
+
+load_dot_env(file = ".env")
 
 Sys.setenv(
-    "AWS_ACCESS_KEY_ID" =Sys.getenv("AWS_ACCESS_KEY_ID"),
-    "AWS_SECRET_ACCESS_KEY" =Sys.getenv("AWS_SECRET_ACCESS_KEY"),
-    "AWS_DEFAULT_REGION" = Sys.getenv("AWS_DEFAULT_REGION")
+    "AWS_ACCESS_KEY_ID"     = Sys.getenv("AWS_ACCESS_KEY_ID"),
+    "AWS_SECRET_ACCESS_KEY" = Sys.getenv("AWS_SECRET_ACCESS_KEY"),
+    "AWS_DEFAULT_REGION"    = Sys.getenv("AWS_DEFAULT_REGION")
 )
+
 # Attach packages
-invisible(suppressMessages(lapply(packages, library, character.only = T)))
+# invisible(suppressMessages(lapply(packages, library, character.only = T)))
 
 # Data 
 # -------------------------------------------------------------------
@@ -52,87 +77,101 @@ path_       = paste0(scldatalake, recurso, app_)
 # Digital technologies
     # Import data
     # 10 countries in LAC
-    df <- s3read_using(FUN = read.csv,
-                       object = paste0(path_,"data-dashboard.csv"),
+    df <- s3read_using(FUN      = read.csv,
+                       object   = paste0(path_,"data-dashboard.csv"),
                        encoding = 'UTF-8')
     
- 
+    df = df %>% mutate(CODE_ = case_when(COUNTRY == "Chile"       ~ "CHI",
+                                         COUNTRY == "Uruguay"     ~ "URY", 
+                                         COUNTRY == "Peru"        ~ "PER", 
+                                         COUNTRY == "Paraguay"    ~ "PRY", 
+                                         COUNTRY == "Panama"      ~ "PAN", 
+                                         COUNTRY == "Honduras"    ~ "HND", 
+                                         COUNTRY == "Ecuador"     ~ "ECU", 
+                                         COUNTRY == "Costa Rica"  ~ "CRI", 
+                                         COUNTRY == "El Salvador" ~ "SLV", 
+                                         COUNTRY == "Mexico"      ~ "MEX")) 
+    
+    #df = read.csv("./output/data-dashboard.csv", encoding = "UTF-8")
+
 # Indicators
-    ind <- s3read_using(FUN = read.csv,
-                       object = paste0(path_,'module-indicators.csv'),
-                       encoding = 'UTF-8')
+    ind <- s3read_using(FUN      = read.csv,
+                        object   = paste0(path_,'module-indicators.csv'),
+                        encoding = "Latin-1")
+
+    #ind = read.csv("./output/module-indicators.csv", encoding = "Latin-1")
     
     names(ind)[1] = "modulo"
     ind = 
         ind %>%
         mutate(modulo    = as.character(modulo),
                indicador = as.character(indicador))
-
+    
 # Output data
     dfOutput = 
-        df %>% 
+        df %>%
         # Reshape dataset
-        reshape2::melt(id.vars       = c("Ponderador","COUNTRY","P1","P2","P0"), 
+        reshape2::melt(id.vars       = c("Ponderador","COUNTRY","P1","P2","P0"),
                        variable.name = "var") %>%
-        
+
         # Process `factor expansion`
-        mutate(P0    = P0 * Ponderador, 
+        mutate(P0    = P0 * Ponderador,
                value = as.numeric(value),
                value = value * Ponderador) %>%
-        
-        # Collapse by country, age, gender, and variable 
+
+        # Collapse by country, age, gender, and variable
         dplyr::group_by(COUNTRY, P1, P2, var) %>%
-        
+
         # summarize variables
-        dplyr::summarize(total_ = sum(value, na.rm = T), 
+        dplyr::summarize(total_ = sum(value, na.rm = T),
                          count_ = sum(P0)) %>%
-        
+
         # Create percentages
         mutate(n = round((total_ / count_) * 100,2)) %>%
-        
+
         # Select variables of interest
         select(COUNTRY, P1, P2, n, var) %>%
-    
-        # Rename variables 
-        rename(Pais = COUNTRY, 
-               Edad = P1, 
+
+        # Rename variables
+        rename(Pais = COUNTRY,
+               Edad = P1,
                Sexo = P2,
-               variable = var, 
+               variable = var,
                Porcentaje = n) %>%
-        
-        # Create summary table 
+
+        # Create summary table
         tidyr::pivot_wider(names_from = Pais, values_from = c("Porcentaje")) %>%
-        
+
         # Format data
         as.data.frame() %>%
-        
+
         # Merge with `indicators` dictionary
         plyr::join(ind, by = "variable") %>%
-        
+
         # Remove NAs
         filter(complete.cases(.)) %>%
-        
+
         # Order variables
-        dplyr::relocate(modulo, .after = variable) %>% 
+        dplyr::relocate(modulo, .after = variable) %>%
         dplyr::relocate(indicador, .after = modulo) %>%
-        
+
         # Rename variable
         rename(code = variable) %>%
-        
+
         # Drop variables
         select(-notes)
     
 # Import Shapefiles
-    # Countries in America 
-    #sh_america <- s3read_using(FUN = readOGR,
-    #                           object = paste0(scldatalake,'/Specialized Survey/Survey on the use of digital tools during COVID-19/data/app/shp/America.geojson'),
-    #                           verbose = F)    
+    # Countries in America
+    sh_america <- s3read_using(FUN = readOGR,
+                            object = paste0(scldatalake,'/Specialized Survey/Survey on the use of digital tools during COVID-19/data/app/shp/America.geojson'),
+                            verbose = F)
+
+    names(sh_america@data)[1] = "COUNTRY"
     
-    sh_america <- readOGR(dsn     = "./raw/shp/Americas.shp",
-                          layer   = 'Americas',
-                          verbose = F)
-
-
+    # sh_america <- readOGR(dsn     = "./raw/shp/Americas.shp",
+    #                       layer   = 'Americas',
+    #                       verbose = F)
 
 # Other
 # -------------------------------------------------------------------
@@ -147,6 +186,9 @@ path_       = paste0(scldatalake, recurso, app_)
     # Generate personlize palette for the choropleth map
     cPal = c('#005B5B','#007979','#009797','#17AEAE','#2EB6B6','#45BEBE','#5CC6C6',
              '#73CECE','#8BD6D6','#A2DEDE','#B9E6E6','#D0EEEE','#E7F6F6')
+    
+    # Other
+    options(encoding = "Latin-1")
 
 # User interface 
 # -------------------------------------------------------------------
@@ -316,12 +358,12 @@ server = function(input, output, session) {
     # Subset indicators dataframe
     indlistInput = eventReactive(input$input0,{
         if (length(input$input0) > 0) {
-            ind_ = 
+            ind_ =
                 ind %>%
                 #filter(modulo == "Uso de tecnologia") %>%
                 filter(modulo == as.character(input$input0)) %>%
                 filter(variable != "")
-            
+
             return(ind_)
         }
     })
@@ -330,7 +372,7 @@ server = function(input, output, session) {
     output$input1 = renderUI({
         selectInput("input1",
                     h5(strong("Indicador:")),
-                    choices = unique(indlistInput()$indicador), 
+                    choices = unique(indlistInput()$indicador),
                     selected = "% que usa smartphones",
                     width = 450)
     })
@@ -338,22 +380,34 @@ server = function(input, output, session) {
     # Subset variable name 
     indnameInput = eventReactive(input$input1,{
         if (length(input$input1) > 0) {
-            name = 
+            name =
                 indlistInput() %>%
                 filter(indicador == as.character(input$input1))
-            
+
             return(name$variable)
-        } 
+        }
     })
     
-    # subset category name
+    # Subset category name
     catnameInput = eventReactive(input$input1, {
         if (length(input$input1) > 0) {
-            name = 
+            name =
                 indlistInput() %>%
                 filter(indicador == as.character(input$input1)) %>%
                 select(category)
             name = as.character(name$category)
+            return(name)
+        }
+    })
+    
+    # subset title name
+    titnameInput = eventReactive(input$input1, {
+        if (length(input$input1) > 0) {
+            name =
+                indlistInput() %>%
+                filter(indicador == as.character(input$input1)) %>%
+                select(title)
+            name = as.character(name$title)
             return(name)
         }
     })
@@ -369,7 +423,7 @@ server = function(input, output, session) {
             rename(val    = indnameInput())                   %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
-                   count_ = P0  * Ponderador)                 %>%                 
+                   count_ = P0  * Ponderador)                 %>%
             dplyr::group_by(COUNTRY)                          %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
                              count_ = sum(count_, na.rm = T)) %>%
@@ -426,26 +480,26 @@ server = function(input, output, session) {
     # Plot 1: Bar plot by gender
     # ---------------------------------------------------------------
     output$plot1 = renderPlotly({
-        df %>% 
+        df %>%
             # Subset
-            select(COUNTRY, Ponderador, indnameInput(), P0, P2) %>%
+            select(CODE_, Ponderador, indnameInput(), P0, P2)   %>%
             rename(val = indnameInput())                        %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
-                   count_ = P0  * Ponderador)                   %>% 
-            dplyr::group_by(COUNTRY, P2)                        %>%
+                   count_ = P0  * Ponderador)                   %>%
+            dplyr::group_by(CODE_, P2)                          %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
                              count_ = sum(count_, na.rm = T))   %>%
-            mutate(n = (total_ / count_) * 100)                 %>% 
-            
+            mutate(n = (total_ / count_) * 100)                 %>%
+
             # Figure
-            plot_ly(x     =~ COUNTRY,
+            plot_ly(x     =~ CODE_,
                     y     =~ n,
                     color =~ P2,
                     type  = 'bar',
                     alpha = 0.7) %>%
-            
-            layout(xaxis         = list(title = '', tickangle = 90),
+
+            layout(xaxis         = list(title = '', tickangle = -90),
                    yaxis         = list(title = '', range = c(0,100)),
                    plot_bgcolor  = 'transparent',
                    paper_bgcolor = 'transparent',
@@ -460,26 +514,26 @@ server = function(input, output, session) {
     # # Plot 2: Bar plot by age groups
     # # ---------------------------------------------------------------
     output$plot2 = renderPlotly({
-        df %>% 
+        df %>%
             # Subset
-            select(COUNTRY, Ponderador, indnameInput(), P0, P1) %>%
+            select(CODE_, Ponderador, indnameInput(), P0, P1)   %>%
             rename(val = indnameInput())                        %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
-                   count_ = P0  * Ponderador)                   %>% 
-            dplyr::group_by(COUNTRY, P1)                        %>%
+                   count_ = P0  * Ponderador)                   %>%
+            dplyr::group_by(CODE_, P1)                          %>%
             dplyr::summarize(total_ = sum(tot, na.rm = T),
                              count_ = sum(count_, na.rm = T))   %>%
-            mutate(n = (total_ / count_) * 100)                 %>% 
-            
+            mutate(n = (total_ / count_) * 100)                 %>%
+
             # Figure
-            plot_ly(x     =~ COUNTRY,
+            plot_ly(x     =~ CODE_,
                     y     =~ n,
                     color =~ P1,
                     type  = 'bar',
                     alpha = 0.7) %>%
-            
-            layout(xaxis         = list(title = '', tickangle = 90),
+
+            layout(xaxis         = list(title = '', tickangle = -90),
                    yaxis         = list(title = '', range = c(0,100)),
                    plot_bgcolor  = 'transparent',
                    paper_bgcolor = 'transparent',
@@ -490,56 +544,57 @@ server = function(input, output, session) {
                    margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
     })
         
-    # # Plot 3: Bar plot by age groups
+    # # Plot 3: Bar plot general
     # # ---------------------------------------------------------------
     output$plot3 = renderPlotly({
         
         if (indnameInput() %in% subset(ind, ind$cat_id == 1)$variable) {
             # Subset
-            temp = 
-                df %>% 
-                select(COUNTRY, Ponderador, P0, starts_with(catnameInput())) %>%
-                # select(COUNTRY, Ponderador, P0, starts_with("P8"))    %>%
-                select(COUNTRY, Ponderador, P0, ends_with("_cat"))    %>%
-                melt(id = c("COUNTRY","Ponderador","P0"))             %>%
+            temp =
+                df %>%
+                select(CODE_, Ponderador, P0, starts_with(catnameInput())) %>%
+                #select(CODE_, Ponderador, P0, starts_with("P8"))    %>%
+                select(CODE_, Ponderador, P0, ends_with("_cat"))      %>%
+                melt(id = c("CODE_","Ponderador","P0"))               %>%
                 rename(category = value)                              %>%
-                mutate(category = as.character(category))             %>% 
-                mutate(variable = as.character(variable))             %>% 
-                dplyr::group_by(COUNTRY, variable, category)          %>%
+                mutate(category = as.character(category))             %>%
+                mutate(variable = as.character(variable))             %>%
+                dplyr::group_by(CODE_, variable, category)            %>%
                 dplyr::summarize(total_ = sum(Ponderador, na.rm = T)) %>%
-                dplyr::group_by(COUNTRY,variable)                     %>%
+                dplyr::group_by(CODE_,variable)                       %>%
                 mutate(count_ = sum(total_, na.rm = T))               %>%
-                mutate(n = (total_ / count_) * 100)                   %>% 
+                mutate(n = (total_ / count_) * 100)                   %>%
                 mutate(category = ifelse(category == "","N/A",category))
-            
+
             # Unique values variable
             nvariable = unique(temp$variable)
-            
+
             # Title
-            # title = ind[ind$category == "P8",]$title
+            #title = ind[ind$category == "P8",]$title
             title = ind[ind$category == catnameInput(),]$title
             title = unique(title)
             title = as.character(title)
+            title = paste0("<b>",title,"</b>")
             title = paste(strwrap(title, width = 90), collapse = "\n")
-            
+
             # Figure
             plots = lapply(nvariable, function(i) {
                 # Subtitle name
                 subtitle = gsub("_cat","",i)
                 subtitle = ind[ind$variable == subtitle,]$category_var
                 subtitle = as.character(subtitle)
-                
-                temp %>% 
-                    mutate(COUNTRY  = as.character(COUNTRY),
+
+                temp %>%
+                    mutate(COUNTRY  = as.character(CODE_),
                            variable = as.character(variable)) %>%
                     filter(variable == i)                     %>%
-                    plot_ly(x     =~ COUNTRY,
+                    plot_ly(x     =~ CODE_,
                             y     =~ n,
                             color =~ category,
                             type  = 'bar',
                             alpha = 0.7,
                             showlegend = (i == nvariable[round(length(nvariable)/2)])) %>%
-                    layout(xaxis         = list(title = subtitle, tickangle = 90),
+                    layout(xaxis         = list(title = subtitle, tickangle = -90),
                            yaxis         = list(title = '', range = c(0,100)),
                            plot_bgcolor  = 'transparent',
                            paper_bgcolor = 'transparent',
@@ -552,33 +607,39 @@ server = function(input, output, session) {
             })
             subplot(plots, nrows = 1, shareY = T, titleX = T) %>% layout(title = list(text = title, y = 1.5, font = list(size = 13)))
         } else {
-            df %>% 
+            # Title
+            title = paste0("<b>",titnameInput(),"</b>")
+            title = paste(strwrap(title, width = 90), collapse = "\n")
+            
+            
+            df %>%
                 # Subset
-                select(COUNTRY, Ponderador, indnameInput(), P0)     %>%
+                select(CODE_, Ponderador, indnameInput(), P0)       %>%
                 rename(val = indnameInput())                        %>%
                 mutate(P0     = ifelse(val >= 0, P0, NA),
                        tot    = val * Ponderador,
-                       count_ = P0  * Ponderador)                   %>% 
-                dplyr::group_by(COUNTRY)                            %>%
+                       count_ = P0  * Ponderador)                   %>%
+                dplyr::group_by(CODE_)                              %>%
                 dplyr::summarize(total_ = sum(tot, na.rm = T),
                                  count_ = sum(count_, na.rm = T))   %>%
-                mutate(n = (total_ / count_) * 100)                 %>% 
+                mutate(n = (total_ / count_) * 100)                 %>%
                 
                 # Figure
-                plot_ly(x     =~ COUNTRY,
+                plot_ly(x     =~ CODE_,
                         y     =~ n,
                         type  = 'bar',
                         alpha = 0.7) %>%
-                
-                layout(xaxis         = list(title = '', tickangle = 90),
+
+                layout(xaxis         = list(title = '', tickangle = -90),
                        yaxis         = list(title = '', range = c(0,100)),
+                       title         = list(text  = title, y = 1.5, font = list(size = 13)),
                        plot_bgcolor  = 'transparent',
                        paper_bgcolor = 'transparent',
                        legend        = list(orientation = 'h',
                                             xanchor     = 'center',
                                             x = 0.5,
                                             y = 1.2),
-                       margin        = list(l = 0, r = 0, b = 0, t = 0, pad = 0))
+                       margin        = list(l = 0, r = 0, b = 20, t = 90, pad = 0))
         }
     })
     
