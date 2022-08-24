@@ -19,20 +19,7 @@ rm(list = ls(all.names = T))
 # install.packages("rgdal", repos = "http://R-Forge.R-project.org")
 
 # Define packages
-# packages = c("shiny","shinythemes","shinydashboard","shinyWidgets",
-#              "leaflet","leaflet.extras","leaflet.minicharts",
-#              "httr","jsonlite",
-#              "readxl",
-#              "rgdal",
-#              "lubridate","data.table",
-#              "stringi","stringr","dplyr",
-#              "DT",
-#              "plotly",
-#              "aws.s3",
-#              "dotenv")
-
-
-library("shiny")
+#library("shiny")
 library("shinythemes")
 library("shinydashboard")
 library("shinyWidgets")
@@ -77,7 +64,7 @@ path_       = paste0(scldatalake, recurso, app_)
 # Digital technologies
     # Import data
     # 10 countries in LAC
-    df <- s3read_using(FUN      = read.csv,
+    df = s3read_using(FUN      = read.csv,
                        object   = paste0(path_,"data-dashboard.csv"),
                        encoding = 'UTF-8')
     
@@ -95,75 +82,76 @@ path_       = paste0(scldatalake, recurso, app_)
     #df = read.csv("./output/data-dashboard.csv", encoding = "UTF-8")
 
 # Indicators
-    ind <- s3read_using(FUN      = read.csv,
-                        object   = paste0(path_,'module-indicators.csv'),
-                        encoding = "Latin-1")
-
-    #ind = read.csv("./output/module-indicators.csv", encoding = "Latin-1")
+    ind = read.csv("./output/module-indicators.csv", encoding = "UTF-8")
+    # ind = s3read_using(FUN      = read.csv,
+    #                     object   = paste0(path_,'module-indicators.csv'),
+    #                     encoding = "UTF-8")
     
     names(ind)[1] = "modulo"
     ind = 
         ind %>%
         mutate(modulo    = as.character(modulo),
-               indicador = as.character(indicador))
+               indicador = as.character(indicador),
+               title     = as.character(title))
     
 # Output data
-    dfOutput = 
-        df %>%
-        # Reshape dataset
-        reshape2::melt(id.vars       = c("Ponderador","COUNTRY","P1","P2","P0"),
-                       variable.name = "var") %>%
-
-        # Process `factor expansion`
-        mutate(P0    = P0 * Ponderador,
-               value = as.numeric(value),
-               value = value * Ponderador) %>%
-
-        # Collapse by country, age, gender, and variable
-        dplyr::group_by(COUNTRY, P1, P2, var) %>%
-
-        # summarize variables
-        dplyr::summarize(total_ = sum(value, na.rm = T),
-                         count_ = sum(P0)) %>%
-
-        # Create percentages
-        mutate(n = round((total_ / count_) * 100,2)) %>%
-
-        # Select variables of interest
-        select(COUNTRY, P1, P2, n, var) %>%
-
-        # Rename variables
-        rename(Pais = COUNTRY,
-               Edad = P1,
-               Sexo = P2,
-               variable = var,
-               Porcentaje = n) %>%
-
-        # Create summary table
-        tidyr::pivot_wider(names_from = Pais, values_from = c("Porcentaje")) %>%
-
-        # Format data
-        as.data.frame() %>%
-
-        # Merge with `indicators` dictionary
-        plyr::join(ind, by = "variable") %>%
-
-        # Remove NAs
-        filter(complete.cases(.)) %>%
-
-        # Order variables
-        dplyr::relocate(modulo, .after = variable) %>%
-        dplyr::relocate(indicador, .after = modulo) %>%
-
-        # Rename variable
-        rename(code = variable) %>%
-
-        # Drop variables
-        select(-notes)
+    dfOutput = df
+        # df %>%
+        # # Reshape dataset
+        # reshape2::melt(id.vars       = c("Ponderador","COUNTRY","P1","P2","P0"),
+        #                variable.name = "var") %>%
+        # 
+        # # Process `factor expansion`
+        # mutate(P0    = P0 * Ponderador,
+        #        value = as.numeric(value),
+        #        value = value * Ponderador) %>%
+        # 
+        # # Collapse by country, age, gender, and variable
+        # dplyr::group_by(COUNTRY, P1, P2, var) %>%
+        # 
+        # # Summarize variables
+        # dplyr::summarize(total_ = sum(value, na.rm = T),
+        #                  count_ = sum(P0)) %>%
+        # 
+        # # Create percentages
+        # mutate(n = round((total_ / count_) * 100,2)) %>%
+        # 
+        # # Select variables of interest
+        # select(COUNTRY, P1, P2, n, var) %>%
+        # 
+        # # Rename variables
+        # dplyr::rename(Pais = COUNTRY,
+        #               Edad = P1,
+        #               Sexo = P2,
+        #               variable = var,
+        #               Porcentaje = n) %>%
+        # 
+        # # Create summary table
+        # tidyr::pivot_wider(names_from = Pais, values_from = c("Porcentaje")) %>%
+        # 
+        # # Format data
+        # as.data.frame() %>%
+        # 
+        # # Merge with `indicators` dictionary
+        # plyr::join(ind, by = "variable") %>%
+        # 
+        # # Remove NAs
+        # filter(complete.cases(.)) %>%
+        # 
+        # # Order variables
+        # dplyr::relocate(modulo, .after = variable) %>%
+        # dplyr::relocate(indicador, .after = modulo) %>%
+        # 
+        # # Rename variable
+        # dplyr::rename(code  = variable,
+        #               Title = title) %>%
+        # 
+        # # Drop variables
+        # select(-notes, -cat_id, -category_var, -X)
     
 # Import Shapefiles
     # Countries in America
-    sh_america <- s3read_using(FUN = readOGR,
+    sh_america = s3read_using(FUN = readOGR,
                             object = paste0(scldatalake,'/Specialized Survey/Survey on the use of digital tools during COVID-19/data/app/shp/America.geojson'),
                             verbose = F)
 
@@ -186,9 +174,6 @@ path_       = paste0(scldatalake, recurso, app_)
     # Generate personlize palette for the choropleth map
     cPal = c('#005B5B','#007979','#009797','#17AEAE','#2EB6B6','#45BEBE','#5CC6C6',
              '#73CECE','#8BD6D6','#A2DEDE','#B9E6E6','#D0EEEE','#E7F6F6')
-    
-    # Other
-    options(encoding = "Latin-1")
 
 # User interface 
 # -------------------------------------------------------------------
@@ -420,7 +405,7 @@ server = function(input, output, session) {
         # Subset dataset
         temp = df %>%
             select(COUNTRY, Ponderador, P0, indnameInput())   %>%
-            rename(val    = indnameInput())                   %>%
+            dplyr::rename(val    = indnameInput())                   %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
                    count_ = P0  * Ponderador)                 %>%
@@ -483,7 +468,7 @@ server = function(input, output, session) {
         df %>%
             # Subset
             select(CODE_, Ponderador, indnameInput(), P0, P2)   %>%
-            rename(val = indnameInput())                        %>%
+            dplyr::rename(val = indnameInput())                        %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
                    count_ = P0  * Ponderador)                   %>%
@@ -517,7 +502,7 @@ server = function(input, output, session) {
         df %>%
             # Subset
             select(CODE_, Ponderador, indnameInput(), P0, P1)   %>%
-            rename(val = indnameInput())                        %>%
+            dplyr::rename(val = indnameInput())                        %>%
             mutate(P0     = ifelse(val >= 0, P0, NA),
                    tot    = val * Ponderador,
                    count_ = P0  * Ponderador)                   %>%
@@ -556,7 +541,7 @@ server = function(input, output, session) {
                 #select(CODE_, Ponderador, P0, starts_with("P8"))    %>%
                 select(CODE_, Ponderador, P0, ends_with("_cat"))      %>%
                 melt(id = c("CODE_","Ponderador","P0"))               %>%
-                rename(category = value)                              %>%
+                dplyr::rename(category = value)                       %>%
                 mutate(category = as.character(category))             %>%
                 mutate(variable = as.character(variable))             %>%
                 dplyr::group_by(CODE_, variable, category)            %>%
@@ -615,7 +600,7 @@ server = function(input, output, session) {
             df %>%
                 # Subset
                 select(CODE_, Ponderador, indnameInput(), P0)       %>%
-                rename(val = indnameInput())                        %>%
+                dplyr::rename(val = indnameInput())                 %>%
                 mutate(P0     = ifelse(val >= 0, P0, NA),
                        tot    = val * Ponderador,
                        count_ = P0  * Ponderador)                   %>%
